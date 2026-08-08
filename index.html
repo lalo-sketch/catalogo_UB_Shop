@@ -4,84 +4,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UB Shop - Catálogo & Accesorios</title>
+  <title>UB Shop - Joyería & Accesorios</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Íconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- PapaParse para Google Sheets -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fdfbf7; }
-    h1, h2, h3, .brand-font { font-family: 'Playfair Display', serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: #0a0a0a; 
+      color: #e5e5e5;
+    }
+    
+    .brand-font { 
+      font-family: 'Cinzel', serif; 
+    }
+
+    /* Efecto Gradiente Dorado Metálico */
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gold-button {
+      background: linear-gradient(135deg, #D4AF37 0%, #AA771C 100%);
+      color: #000;
+    }
+
+    .gold-button:hover {
+      background: linear-gradient(135deg, #FCF6BA 0%, #D4AF37 100%);
+    }
+
+    .gold-glow {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+    }
   </style>
 </head>
-<body class="text-gray-800 antialiased">
+<body class="antialiased selection:bg-amber-500 selection:text-black">
 
-  <header class="bg-white border-b border-amber-100 sticky top-0 z-50 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-4 text-center">
-      <h1 class="text-3xl font-bold tracking-wide text-amber-900">UB Shop</h1>
-      <p class="text-xs uppercase tracking-widest text-amber-600 mt-1">Joyería & Accesorios</p>
+  <!-- ENCABEZADO / PORTADA -->
+  <header class="bg-neutral-900/90 backdrop-blur-md border-b border-amber-500/30 sticky top-0 z-50 shadow-2xl">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-center flex flex-col items-center justify-center">
+      
+      <!-- Logo Diamante Dorado -->
+      <div class="w-16 h-16 mb-3 rounded-full border border-amber-500/40 bg-neutral-950 flex items-center justify-center gold-glow transform hover:scale-105 transition-transform duration-300">
+        <i class="fa-solid fa-gem text-3xl gold-gradient-text"></i>
+      </div>
+
+      <!-- Nombre de la Marca -->
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-widest brand-font gold-gradient-text uppercase">
+        UB SHOP
+      </h1>
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-amber-200/60 mt-1 font-semibold">
+        Joyería & Accesorios Exclusivos
+      </p>
     </div>
     
-    <div class="max-w-6xl mx-auto px-4 pb-4 pt-2">
+    <!-- BARRA DE BÚSQUEDA -->
+    <div class="max-w-2xl mx-auto px-4 pb-5 pt-1">
       <div class="relative">
-        <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Buscar joyas, gorras, cadenas..." 
-               class="w-full pl-10 pr-4 py-2 bg-amber-50/50 border border-amber-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-amber-400"></i>
+        <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Buscar en el catálogo exclusivo..." 
+               class="w-full pl-11 pr-4 py-2.5 bg-neutral-950 border border-amber-500/30 rounded-full text-sm text-amber-100 placeholder-neutral-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-amber-500/70"></i>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
-    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-      <p class="col-span-full text-center text-gray-500 py-10">Cargando catálogo en tiempo real...</p>
+  <!-- SECCIÓN DE PRODUCTOS -->
+  <main class="max-w-6xl mx-auto px-4 py-10">
+    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7">
+      <!-- Carga inicial -->
     </div>
   </main>
 
   <script>
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zWzHSQ2aTtq-jrQjK-Rib2Qig2dVpPiFyE4Yvhh6gFl-HD8WTHaEIia2m3fwvB9ti5t3is5r/pub?output=csv';
     const PHONE_NUMBER = '5212222051026';
-    const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
 
-    function loadProductsFromSheets() {
-      Papa.parse(SHEET_CSV_URL, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          if (results.data && results.data.length > 0) {
-            renderProducts(results.data);
-          } else {
-            document.getElementById('productGrid').innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">No hay productos disponibles.</p>';
-          }
-        },
-        error: function(err) {
-          console.error("Error al conectar con Sheets:", err);
-          document.getElementById('productGrid').innerHTML = '<p class="col-span-full text-center text-red-500 py-10">Error al cargar el catálogo.</p>';
-        }
-      });
-    }
+    const localProducts = [
+      { SKU: 'CAD-001', Nombre: 'Cadena de oro', Categoria: 'Cadenas', Precio: '450', Imagen_URL: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500' },
+      { SKU: 'CAD-002', Nombre: 'Cadena de plata', Categoria: 'Cadenas', Precio: '500', Imagen_URL: 'https://images.unsplash.com/photo-1626379965592-dc26158305f8?w=500' }
+    ];
 
     function renderProducts(products) {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
 
       products.forEach(p => {
-        // Normalizamos las llaves de la fila para evitar errores por mayúsculas o espacios
         const keys = Object.keys(p);
-        const getVal = (target) => {
-          const foundKey = keys.find(k => k.trim().toLowerCase() === target.toLowerCase());
-          return foundKey ? p[foundKey] : '';
-        };
-
-        const sku = getVal('SKU') || 'N/A';
-        const name = getVal('Nombre') || 'Producto';
-        const category = getVal('Categoria') || 'General';
-        const price = getVal('Precio') || '0';
-        let image = getVal('Imagen_URL') || getVal('Imagen') || DEFAULT_IMAGE;
-
-        // Si la celda viene vacía o no es válida, usamos la imagen por defecto
-        if (!image || image.trim() === '' || !image.startsWith('http')) {
-          image = DEFAULT_IMAGE;
-        }
-
-        const message = encodeURIComponent(¡Hola! Me interesa comprar el producto: ${name} (SKU: ${sku}) con precio de $${price} MXN.);
+        const get
