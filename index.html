@@ -68,16 +68,17 @@
   </main>
 
 <script>
-  // Pega aquí la URL de 'Publicar en la web' (.csv) de tu hoja actual
+  // URL de tu Google Sheet publicada como CSV
   const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zkzH5Q2aTtq-irQJk-Rib2QIg2dVpPifyE4Yvhh6gf1-HD8wTHeMia2m3fwB9ti5t3is5r/pub?output=csv';
   const PHONE_NUMBER = '521222051026';
+  const fallbackUrl = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
 
   function drawCards(items) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
 
     if (!Array.isArray(items) || items.length === 0) {
-      grid.innerHTML = '<p class="text-amber-400 text-center col-span-full py-10">La hoja de Google Sheets está vacía o no tiene productos.</p>';
+      grid.innerHTML = '<p class="text-amber-400 text-center col-span-full py-10">La hoja de Google Sheets no tiene productos.</p>';
       return;
     }
 
@@ -97,18 +98,18 @@
       const price = getAttr('precio') || '0';
       const img = getAttr('imagen') || getAttr('imagen_url');
 
+      // Si la celda de Nombre está vacía, no dibuja la tarjeta
       if (!name || name.trim() === '') return;
 
-      const message = encodeURIComponent(Hola, me interesa el producto: ${name} (SKU: ${sku}) con precio $${price});
-      const waUrl = https://wa.me/${PHONE_NUMBER}?text=${message};
+      const message = encodeURIComponent('Hola, me interesa el producto: ' + name + ' (SKU: ' + sku + ') con precio $' + price);
+      const waUrl = 'https://wa.me/' + PHONE_NUMBER + '?text=' + message;
 
-      const imageHTML = (img && img.trim() !== '') 
-        ? <img src="${img.trim()}" alt="${name}" class="w-full h-48 object-cover rounded-xl mb-4" onError="this.src='https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500'">
-        : <div class="w-full h-48 bg-neutral-800 rounded-xl mb-4 flex items-center justify-center text-xs text-neutral-500">Sin imagen</div>;
+      // Usa la imagen de Google Sheets o el respaldo si la celda está vacía
+      const imgSrc = (img && img.trim() !== '') ? img.trim() : fallbackUrl;
 
       html += `
         <div class="bg-neutral-900 border border-amber-500/20 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between p-4">
-          ${imageHTML}
+          <img src="${imgSrc}" alt="${name}" class="w-full h-48 object-cover rounded-xl mb-4" onerror="this.src='${fallbackUrl}'">
           <div class="flex-1">
             <span class="text-xs text-amber-400 uppercase tracking-widest">${category}</span>
             <h3 class="text-lg font-bold text-white mb-1">${name}</h3>
@@ -124,28 +125,38 @@
       `;
     });
 
-    grid.innerHTML = html;
+    if (html.trim() === '') {
+      grid.innerHTML = '<p class="text-amber-400 text-center col-span-full py-10">No se encontraron productos válidos en la hoja.</p>';
+    } else {
+      grid.innerHTML = html;
+    }
   }
 
-  // Petición directa y segura
+  // Descarga y procesamiento seguro
   fetch(SHEET_CSV_URL)
     .then(response => {
-      if (!response.ok) throw new Error('No se pudo acceder al enlace del CSV');
+      if (!response.ok) throw new Error('No se pudo conectar a Google Sheets');
       return response.text();
     })
     .then(csvText => {
       if (window.Papa) {
-        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-        drawCards(parsed.data);
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            console.log('Productos obtenidos:', results.data);
+            drawCards(results.data);
+          }
+        });
       } else {
-        throw new Error('La librería PapaParse no está cargada en el HTML');
+        throw new Error('La librería PapaParse no se ha cargado');
       }
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error(error);
       const grid = document.getElementById('productGrid');
       if (grid) {
-        grid.innerHTML = <p class="text-red-400 text-center col-span-full py-10">Error de conexión: ${error.message}</p>;
+        grid.innerHTML = '<p class="text-red-400 text-center col-span-full py-10">Error: ' + error.message + '</p>';
       }
     });
 </script>
