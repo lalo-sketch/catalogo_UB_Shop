@@ -67,31 +67,92 @@
     </div>
   </main>
 
-  <script>
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zWzHSQ2aTtq-jrQjK-Rib2Qig2dVpPiFyE4Yvhh6gFl-HD8WTHaEIia2m3fwvB9ti5t3is5r/pub?output=csv';
-    const PHONE_NUMBER = '5212222051026';
-    const fallbackImg = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
+ <script>
+  // Configuración de la hoja de Google Sheets y contacto
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zkzH5Q2aTtq-irQJk-Rib2QIg2dVpPifyE4Yvhh6gf1-HD8wTHeMia2m3fwB9ti5t3is5r/pub?output=csv';
+  const PHONE_NUMBER = '521222051026';
+  
+  // Imagen de prueba por si un producto no tiene foto o la URL falla
+  const fallbackImg = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
 
-    const localProducts = [
-      { SKU: 'CAD-001', Nombre: 'Cadena de oro', Categoria: 'Cadenas', Precio: '450', Imagen_URL: fallbackImg },
-      { SKU: 'CAD-002', Nombre: 'Cadena de plata', Categoria: 'Cadenas', Precio: '500', Imagen_URL: 'https://images.unsplash.com/photo-1626379965592-dc26158305f8?w=500' }
-    ];
+  // Productos locales de respaldo (por si falla la conexión a internet)
+  const localProducts = [
+    { SKU: 'CAD-001', Nombre: 'Cadena de oro', Categoria: 'Cadenas', Precio: '450', Imagen: fallbackImg },
+    { SKU: 'CAD-002', Nombre: 'Cadena de plata', Categoria: 'Cadenas', Precio: '500', Imagen: fallbackImg }
+  ];
 
-    function drawCards(items) {
-      const grid = document.getElementById('productGrid');
-      if (!grid || !Array.isArray(items) || items.length === 0) return;
+  // Función encargada de construir las tarjetas e inyectarlas en el HTML
+  function drawCards(items) {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
 
-      let html = '';
+    const productsToRender = (Array.isArray(items) && items.length > 0) ? items : localProducts;
+    let html = '';
 
-      items.forEach(item => {
-        if (!item || typeof item !== 'object') return;
+    productsToRender.forEach(item => {
+      if (!item || typeof item !== 'object') return;
 
-        const getAttr = (key) => {
-          const matchedKey = Object.keys(item).find(k => k.trim().toLowerCase() === key.toLowerCase());
-          return matchedKey ? item[matchedKey] : '';
-        };
+      // Helper para buscar el valor de la columna sin importar si está en mayúsculas o minúsculas
+      const getAttr = (key) => {
+        const matchedKey = Object.keys(item).find(k => k.trim().toLowerCase() === key.toLowerCase());
+        return matchedKey ? item[matchedKey] : '';
+      };
 
-        const sku = getAttr('sku') || 'N/A';
-        const name = getAttr('nombre') || '';
-        const category = getAttr('categoria') || 'Joyería
-          drawCards(localProducts);
+      const sku = getAttr('sku') || 'N/A';
+      const name = getAttr('nombre') || 'Producto';
+      const category = getAttr('categoria') || 'Joyería';
+      const price = getAttr('precio') || '0';
+      
+      // Busca la columna 'imagen', 'imagen_url' o usa el respaldo
+      let img = getAttr('imagen') || getAttr('imagen_url') || fallbackImg;
+      if (!img || img.trim() === '') img = fallbackImg;
+
+      // Mensaje automatizado para el botón de WhatsApp
+      const message = encodeURIComponent(Hola, me interesa el producto: ${name} (SKU: ${sku}) con precio $${price});
+      const waUrl = https://wa.me/${PHONE_NUMBER}?text=${message};
+
+      html += `
+        <div class="bg-neutral-900 border border-amber-500/20 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between p-4">
+          <img src="${img}" alt="${name}" class="w-full h-48 object-cover rounded-xl mb-4" onError="this.src='${fallbackImg}'">
+          <div class="flex-1">
+            <span class="text-xs text-amber-400 uppercase tracking-widest">${category}</span>
+            <h3 class="text-lg font-bold text-white mb-1">${name}</h3>
+            <p class="text-sm text-neutral-400 mb-3">SKU: ${sku}</p>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-neutral-800">
+            <span class="text-xl font-extrabold text-amber-300">$${price}</span>
+            <a href="${waUrl}" target="_blank" class="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+              Pedir
+            </a>
+          </div>
+        </div>
+      `;
+    });
+
+    grid.innerHTML = html;
+  }
+
+  // 1. Dibuja los productos locales inmediatamente
+  drawCards(localProducts);
+
+  // 2. Consulta la hoja de Google Sheets en segundo plano
+  fetch(SHEET_CSV_URL)
+    .then(res => res.text())
+    .then(csvText => {
+      const lines = csvText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return;
+
+      const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+      const parsedProducts = lines.slice(1).map(line => {
+        const values = line.split(/,(?=(?:(?:[^"]"){2})[^"]*$)/).map(v => v.replace(/^"|"$/g, '').trim());
+        let obj = {};
+        headers.forEach((h, i) => obj[h] = values[i] || '');
+        return obj;
+      });
+
+      if (parsedProducts.length > 0) {
+        drawCards(parsedProducts);
+      }
+    })
+    .catch(err => console.log('Cargando con respaldo local:', err));
+</script>
