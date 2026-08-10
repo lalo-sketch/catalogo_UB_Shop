@@ -67,53 +67,48 @@
     </div>
   </main>
 
- <script>
-  // Configuración de la hoja de Google Sheets y contacto
+<script>
+  // Pega aquí la URL de 'Publicar en la web' (.csv) de tu hoja actual
   const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zkzH5Q2aTtq-irQJk-Rib2QIg2dVpPifyE4Yvhh6gf1-HD8wTHeMia2m3fwB9ti5t3is5r/pub?output=csv';
   const PHONE_NUMBER = '521222051026';
-  
-  // Imagen de prueba por si un producto no tiene foto o la URL falla
-  const fallbackImg = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
 
-  // Productos locales de respaldo (por si falla la conexión a internet)
-  const localProducts = [
-    { SKU: 'CAD-001', Nombre: 'Cadena de oro', Categoria: 'Cadenas', Precio: '450', Imagen: fallbackImg },
-    { SKU: 'CAD-002', Nombre: 'Cadena de plata', Categoria: 'Cadenas', Precio: '500', Imagen: fallbackImg }
-  ];
-
-  // Función encargada de construir las tarjetas e inyectarlas en el HTML
   function drawCards(items) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
 
-    const productsToRender = (Array.isArray(items) && items.length > 0) ? items : localProducts;
+    if (!Array.isArray(items) || items.length === 0) {
+      grid.innerHTML = '<p class="text-amber-400 text-center col-span-full py-10">La hoja de Google Sheets está vacía o no tiene productos.</p>';
+      return;
+    }
+
     let html = '';
 
-    productsToRender.forEach(item => {
+    items.forEach(item => {
       if (!item || typeof item !== 'object') return;
 
-      // Helper para buscar el valor de la columna sin importar si está en mayúsculas o minúsculas
       const getAttr = (key) => {
         const matchedKey = Object.keys(item).find(k => k.trim().toLowerCase() === key.toLowerCase());
         return matchedKey ? item[matchedKey] : '';
       };
 
       const sku = getAttr('sku') || 'N/A';
-      const name = getAttr('nombre') || 'Producto';
+      const name = getAttr('nombre');
       const category = getAttr('categoria') || 'Joyería';
       const price = getAttr('precio') || '0';
-      
-      // Busca la columna 'imagen', 'imagen_url' o usa el respaldo
-      let img = getAttr('imagen') || getAttr('imagen_url') || fallbackImg;
-      if (!img || img.trim() === '') img = fallbackImg;
+      const img = getAttr('imagen') || getAttr('imagen_url');
 
-      // Mensaje automatizado para el botón de WhatsApp
+      if (!name || name.trim() === '') return;
+
       const message = encodeURIComponent(Hola, me interesa el producto: ${name} (SKU: ${sku}) con precio $${price});
       const waUrl = https://wa.me/${PHONE_NUMBER}?text=${message};
 
+      const imageHTML = (img && img.trim() !== '') 
+        ? <img src="${img.trim()}" alt="${name}" class="w-full h-48 object-cover rounded-xl mb-4" onError="this.src='https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500'">
+        : <div class="w-full h-48 bg-neutral-800 rounded-xl mb-4 flex items-center justify-center text-xs text-neutral-500">Sin imagen</div>;
+
       html += `
         <div class="bg-neutral-900 border border-amber-500/20 rounded-2xl overflow-hidden hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between p-4">
-          <img src="${img}" alt="${name}" class="w-full h-48 object-cover rounded-xl mb-4" onError="this.src='${fallbackImg}'">
+          ${imageHTML}
           <div class="flex-1">
             <span class="text-xs text-amber-400 uppercase tracking-widest">${category}</span>
             <h3 class="text-lg font-bold text-white mb-1">${name}</h3>
@@ -132,27 +127,25 @@
     grid.innerHTML = html;
   }
 
-  // 1. Dibuja los productos locales inmediatamente
-  drawCards(localProducts);
-
-  // 2. Consulta la hoja de Google Sheets en segundo plano
+  // Petición directa y segura
   fetch(SHEET_CSV_URL)
-    .then(res => res.text())
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo acceder al enlace del CSV');
+      return response.text();
+    })
     .then(csvText => {
-      const lines = csvText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 2) return;
-
-      const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
-      const parsedProducts = lines.slice(1).map(line => {
-        const values = line.split(/,(?=(?:(?:[^"]"){2})[^"]*$)/).map(v => v.replace(/^"|"$/g, '').trim());
-        let obj = {};
-        headers.forEach((h, i) => obj[h] = values[i] || '');
-        return obj;
-      });
-
-      if (parsedProducts.length > 0) {
-        drawCards(parsedProducts);
+      if (window.Papa) {
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+        drawCards(parsed.data);
+      } else {
+        throw new Error('La librería PapaParse no está cargada en el HTML');
       }
     })
-    .catch(err => console.log('Cargando con respaldo local:', err));
+    .catch(error => {
+      console.error('Error:', error);
+      const grid = document.getElementById('productGrid');
+      if (grid) {
+        grid.innerHTML = <p class="text-red-400 text-center col-span-full py-10">Error de conexión: ${error.message}</p>;
+      }
+    });
 </script>
