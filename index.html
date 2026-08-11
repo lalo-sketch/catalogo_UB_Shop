@@ -128,3 +128,39 @@
           </div>
         `;
       });
+    }
+
+    // Filtrar productos desde la barra de búsqueda
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allProducts.filter(item => {
+        const nameMatch = item.nombre && item.nombre.toLowerCase().includes(query);
+        const catMatch = item.categoria && item.categoria.toLowerCase().includes(query);
+        return nameMatch || catMatch;
+      });
+      drawCards(filtered);
+    }
+
+    // Función principal para obtener y cargar datos desde Google Sheets
+    async function loadProducts() {
+      try {
+        const response = await fetch(SHEET_CSV_URL);
+        if (!response.ok) throw new Error('Error al conectar con la hoja de Google Sheets');
+        
+        const csvText = await response.text();
+        allProducts = parseCSV(csvText);
+        drawCards(allProducts);
+      } catch (error) {
+        console.error('Error cargando el catálogo:', error);
+        const grid = document.getElementById('productGrid');
+        if (grid) {
+          grid.innerHTML = '<p class="text-red-400 text-center col-span-full py-10">Error al cargar los productos. Asegúrate de publicar la hoja en la web como CSV.</p>';
+        }
+      }
+    }
+
+    // Iniciar la carga al abrir la página
+    document.addEventListener('DOMContentLoaded', loadProducts);
+  </script>
+</body>
+</html>
