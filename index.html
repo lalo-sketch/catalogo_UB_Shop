@@ -50,14 +50,15 @@
 
   </div>
 
-  <script>
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zkzH5Q2aTtq-irQJk-Rib2QTg2dVpPifyE4YVhh6gf1-HD8wTHeMia2m3fuB9ti5t3is5r/pub?output=csv';
-    const PHONE_NUMBER = '521222051026';
-    const fallbackImg = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500';
+ <script>
+    // Enlace público de Google Sheets en formato CSV
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zWzHSQ2aTtq-jrQJk-Rib2Qig2dVpPifyE4Yvhh6gFl-HD8WThAElia2m3fwvB9ti5t3is5r/pub?output=csv';
+    const PHONE_NUMBER = '521234567890'; // Pon aquí tu número de WhatsApp
+    const fallbackImg = 'https://via.placeholder.com/300x300?text=Sin+Imagen';
 
     let allProducts = [];
 
-    // Parseador manual para cadenas CSV
+    // Parseador manual para líneas CSV
     function parseCSVLine(line) {
       const values = [];
       let current = '';
@@ -77,6 +78,7 @@
       return values;
     }
 
+    // Convertir el texto CSV completo a objetos JSON
     function parseCSV(text) {
       const rawLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
       if (rawLines.length < 2) return [];
@@ -95,7 +97,7 @@
       return products;
     }
 
-   // Renderizar las tarjetas de productos
+    // Renderizar las tarjetas de productos
     function drawCards(items) {
       const grid = document.getElementById('productGrid');
       if (!grid) return;
@@ -109,7 +111,7 @@
 
       items.forEach(item => {
         const imgSrc = item.imagen && item.imagen.startsWith('http') ? item.imagen : fallbackImg;
-        const whatsappMsg = encodeURIComponent('Hola, me interesa obtener información sobre: ${item.nombre'|| 'un producto'});
+        const whatsappMsg = encodeURIComponent(Hola, me interesa obtener información sobre: ${item.nombre || 'un producto'});
         const waLink = https://wa.me/${PHONE_NUMBER}?text=${whatsappMsg};
 
         html += `
@@ -131,8 +133,7 @@
 
       grid.innerHTML = html;
     }
-
-    // Filtrar productos desde la barra de búsqueda
+   // Filtrar productos desde la barra de búsqueda
     function filterProducts() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const filtered = allProducts.filter(item => {
