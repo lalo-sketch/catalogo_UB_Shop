@@ -96,6 +96,19 @@
       }
       return products;
     }
+   // Convertir enlaces de Google Drive a URLs de imagen directas
+function formatImageUrl(url) {
+  if (!url) return fallbackImg;
+  
+  if (url.includes('drive.google.com')) {
+    const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (idMatch && idMatch[1]) {
+      return https://lhs3.googleusercontent.com/d/${idMatch[1]};
+    }
+  }
+  
+  return url.startsWith('http') ? url : fallbackImg;
+}
 
     // Renderizar las tarjetas de productos
     function drawCards(items) {
@@ -110,7 +123,7 @@
       let html = '';
 
       items.forEach(item => {
-        const imgSrc = item.imagen && item.imagen.startsWith('http') ? item.imagen : fallbackImg;
+        const imgSrc = formatImageUrl(item.imagen);
         const whatsappMsg = encodeURIComponent(`Hola, me interesa obtener información sobre: ${item.nombre || 'un producto'}`);
         const waLink =`https://wa.me/${PHONE_NUMBER}?text=${whatsappMsg}`;
 
