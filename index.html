@@ -112,7 +112,7 @@
       items.forEach(item => {
         const imgSrc = item.imagen && item.imagen.startsWith('http') ? item.imagen : fallbackImg;
         const whatsappMsg = encodeURIComponent(`Hola, me interesa obtener información sobre: ${item.nombre || 'un producto'}`);
-        const waLink = https://wa.me/${PHONE_NUMBER}?text=${whatsappMsg};
+        const waLink =`https://wa.me/${PHONE_NUMBER}?text=${whatsappMsg}`;
 
         html += `
           <div class="bg-neutral-900/90 rounded-xl p-4 border border-amber-500/20 flex flex-col justify-between hover:border-amber-500/50 transition-all">
