@@ -145,7 +145,7 @@ function drawCards(items) {
 
   items.forEach((item, index) => {
     const imgSrc = formatImageUrl(item.imagen);
-    const whatsappMsg = encodeURIComponent(Hola, me interesa obtener información sobre: ${item.nombre || 'un producto'});
+    const whatsappMsg = encodeURIComponent(`Hola, me interesa obtener información sobre: ${item.nombre || 'un producto'}`);
     const waLink = https://wa.me/${PHONE_NUMBER}?text=${whatsappMsg};
 
     html += `
