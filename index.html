@@ -61,7 +61,7 @@
     <!-- Contenido -->
     <h3 id="modalTitle" class="text-xl font-bold text-white mb-1 text-center"></h3>
     <p id="modalCategory" class="text-amber-200/70 text-xs font-medium uppercase tracking-wider mb-3 text-center"></p>
-    <p id="modalDescription" class="text-neutral-300 text-sm mb-4 text-center leading-relaxed"></p>
+    <p id="modalDescription" class="text-neutral-300 text-sm mb-4 text-left whitespace-pre-line leading-relaxed px-2"></p>
     
     <div class="flex justify-between items-center w-full pt-3 border-t border-neutral-800">
       <span id="modalPrice" class="text-emerald-400 font-bold text-xl"></span>
@@ -234,7 +234,7 @@ function openModal(index) {
   document.getElementById('modalImg').src = imgSrc;
   document.getElementById('modalTitle').textContent = nombre;
   document.getElementById('modalCategory').textContent = item.categoria || '';
-  document.getElementById('modalDescription').textContent = item.descripcion || 'Sin descripción disponible.';
+  document.getElementById('modalDescription').innerHTML = (item.descripcion || 'Sin descripción disponible.').replace(/\n/g, '<br>');
   document.getElementById('modalPrice').textContent = item.precio ? '$' + item.precio : '';
   document.getElementById('modalWaLink').href = 'https://wa.me/' + PHONE_NUMBER + '?text=' + whatsappMsg;
 
