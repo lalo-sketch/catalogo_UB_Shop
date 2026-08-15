@@ -100,36 +100,54 @@
       return values;
     }
 
-    // Convertir el texto CSV completo a objetos JSON
-    function parseCSV(text) {
-      const rawLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-      if (rawLines.length < 2) return [];
+   // Convertir el texto CSV completo a objetos JSON (manejando saltos de línea correctamente)
+function parseCSV(text) {
+  const lines = [];
+  let curLine = '';
+  let inQuotes = false;
 
-      const headers = parseCSVLine(rawLines[0]).map(h => h.toLowerCase().trim());
-
-      const products = [];
-      for (let i = 1; i < rawLines.length; i++) {
-        const values = parseCSVLine(rawLines[i]);
-        let obj = {};
-        headers.forEach((h, index) => {
-          obj[h] = values[index] || '';
-        });
-        products.push(obj);
+  // 1. Separar por líneas respetando los textos entre comillas
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      curLine += char;
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && text[i + 1] === '\n') {
+        i++; // Saltar el caracter \n extra en saltos \r\n
       }
-      return products;
-    }
-   // Convertir enlaces de Google Drive a URLs de imagen directas
-function formatImageUrl(url) {
-  if (!url) return fallbackImg;
-  
-  if (url.includes('drive.google.com')) {
-    const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (idMatch && idMatch[1]) {
-      return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1000`;
+      if (curLine.trim().length > 0) {
+        lines.push(curLine);
+      }
+      curLine = '';
+    } else {
+      curLine += char;
     }
   }
-  
-  return url.startsWith('http') ? url : fallbackImg;
+  if (curLine.trim().length > 0) {
+    lines.push(curLine);
+  }
+
+  if (lines.length < 2) return [];
+
+  const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+  const products = [];
+
+  // 2. Mapear los datos a objetos JSON
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCSVLine(lines[i]);
+    let obj = {};
+    headers.forEach((h, index) => {
+      obj[h] = values[index] || '';
+    });
+
+    // 3. RESTRICCIÓN: Solo agregar el producto si la celda "nombre" contiene texto válido
+    if (obj.nombre && obj.nombre.trim() !== '') {
+      products.push(obj);
+    }
+  }
+
+  return products;
 }
  // Renderizar las tarjetas de productos
 function drawCards(items) {
