@@ -190,6 +190,36 @@ function drawCards(items) {
 
     // Iniciar la carga al abrir la página
     document.addEventListener('DOMContentLoaded', loadProducts);
+   // Funciones del Modal
+function openModal(index) {
+  const item = allProducts[index];
+  if (!item) return;
+
+  const imgSrc = formatImageUrl(item.imagen);
+  const nombre = item.nombre || 'Sin nombre';
+  const whatsappMsg = encodeURIComponent('Hola, me interesa obtener información sobre: ' + nombre);
+  
+  document.getElementById('modalImg').src = imgSrc;
+  document.getElementById('modalTitle').textContent = nombre;
+  document.getElementById('modalCategory').textContent = item.categoria || '';
+  document.getElementById('modalDescription').textContent = item.descripcion || 'Sin descripción disponible.';
+  document.getElementById('modalPrice').textContent = item.precio ? '$' + item.precio : '';
+  document.getElementById('modalWaLink').href = 'https://wa.me/' + PHONE_NUMBER + '?text=' + whatsappMsg;
+
+  const modal = document.getElementById('productModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('productModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
   </script>
 </body>
 </html>
