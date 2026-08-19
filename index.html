@@ -377,6 +377,18 @@ document.getElementById('cartItemsContainer').addEventListener('click', (e) => {
     }
   }
 });
+   function updateQuantity(index, change) {
+    // Busca el producto en el carrito por su índice
+    if (cart[index]) {
+        cart[index].quantity += change;
+        // Si la cantidad llega a 0 o menos, elimina el producto del carrito
+        if (cart[index].quantity <= 0) {
+            cart.splice(index, 1);
+        }
+    }
+    // Actualiza la interfaz para reflejar los cambios
+    updateCartUI();
+}
 
     function toggleCartDrawer() {
       const drawer = document.getElementById('cartDrawer');
