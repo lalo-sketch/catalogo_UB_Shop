@@ -346,7 +346,8 @@ function openModal(index) {
 
       updateCartUI();
     }
- function updateCartUI() {
+
+   function updateCartUI() {
   const container = document.getElementById('cartItemsContainer');
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
@@ -362,9 +363,9 @@ function openModal(index) {
     countEl.textContent = '0';
     totalEl.textContent = '$0';
     if (progressText && progressBar) {
-      progressText.innerHTML = 'Agrega productos para obtener <b>Envío Gratis</b>';
-      progressBar.style.width = '0%';
-      progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+        progressText.innerHTML = 'Agrega productos para obtener <b>Envío Gratis</b>';
+        progressBar.style.width = '0%';
+        progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
     }
   } else {
     let html = '';
@@ -392,13 +393,12 @@ function openModal(index) {
     if (progressText && progressBar) {
       const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
       progressBar.style.width = percentage + '%';
-
       if (totalPrice >= freeShippingThreshold) {
         progressText.innerHTML = '🎉 <span class="text-emerald-400 font-bold">¡Felicidades! Tienes Envío Gratis</span>';
         progressBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
       } else {
         const remaining = freeShippingThreshold - totalPrice;
-        progressText.innerHTML =  `Te faltan <b class="text-amber-400">$' + remaining.toLocaleString() + '</b> para <b>Envío Gratis</b>`;
+        progressText.innerHTML = 'Te faltan <b class="text-amber-400">$' + remaining.toLocaleString() + '</b> para <b>Envío Gratis</b>';
         progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
       }
     }
