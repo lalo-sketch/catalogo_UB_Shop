@@ -346,69 +346,56 @@ function openModal(index) {
 
       updateCartUI();
     }
+    function updateCartUI() {
+    const container = document.getElementById('cartItemsContainer');
+    const countEl = document.getElementById('cartCount');
+    const totalEl = document.getElementById('cartTotal');
+    const progressText = document.getElementById('shippingProgressText');
+    const progressBar = document.getElementById('shippingProgressBar');
 
-   function updateCartUI() {
-  const container = document.getElementById('cartItemsContainer');
-  const countEl = document.getElementById('cartCount');
-  const totalEl = document.getElementById('cartTotal');
-  const progressText = document.getElementById('shippingProgressText');
-  const progressBar = document.getElementById('shippingProgressBar');
+    let totalItems = 0;
+    let totalPrice = 0;
+    const freeShippingThreshold = 990;
 
-  let totalItems = 0;
-  let totalPrice = 0;
-  const freeShippingThreshold = 990;
+    if (cart.length === 0) {
+        container.innerHTML = '<p class="text-neutral-500 text-center py-8 text-sm">Tu carrito está vacío.</p>';
+        countEl.textContent = '0';
+        totalEl.textContent = '$0';
+        if (progressText && progressBar) {
+            progressText.innerHTML = 'Agrega productos para obtener <b>Envío Gratis</b>';
+            progressBar.style.width = '0%';
+        }
+    } else {
+        let html = '';
+        cart.forEach((item, index) => {
+            totalItems += item.quantity;
+            totalPrice += item.precio * item.quantity;
+            html += `<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
+                        <img src="${item.imagen}" class="w-12 h-12 object-cover rounded">
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-white line-clamp-1">${item.nombre}</h4>
+                            <p class="text-emerald-400 text-xs font-semibold">$${(item.precio * item.quantity).toLocaleString()}</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded border border-neutral-800">
+                            <button type="button" data-index="${index}" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>
+                            <span class="text-xs text-white font-bold w-4 text-center">${item.quantity}</span>
+                            <button type="button" data-index="${index}" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>
+                        </div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+        countEl.textContent = totalItems;
+        totalEl.textContent = '$' + totalPrice.toLocaleString();
 
-  if (cart.length === 0) {
-    container.innerHTML = '<p class="text-neutral-500 text-center py-8 text-sm">Tu carrito está vacío.</p>';
-    countEl.textContent = '0';
-    totalEl.textContent = '$0';
-    if (progressText && progressBar) {
-        progressText.innerHTML = 'Agrega productos para obtener <b>Envío Gratis</b>';
-        progressBar.style.width = '0%';
-        progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+        if (progressText && progressBar) {
+            const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+            progressBar.style.width = percentage + '%';
+            progressText.innerHTML = totalPrice >= freeShippingThreshold ? 
+                '🎉 <span class="text-emerald-400 font-bold">¡Envío Gratis!</span>' : 
+                Te faltan <b class="text-amber-400">$${(freeShippingThreshold - totalPrice).toLocaleString()}</b>;
+        }
     }
-  } else {
-    let html = '';
-    cart.forEach((item, index) => {
-      totalItems += item.quantity;
-      totalPrice += item.precio * item.quantity;
-
-      html += '<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">' +
-              '<img src="' + item.imagen + '" class="w-12 h-12 object-cover rounded">' +
-              '<div class="flex-1">' +
-              '<h4 class="text-xs font-bold text-white line-clamp-1">' + item.nombre + '</h4>' +
-              '<p class="text-emerald-400 text-xs font-semibold">$' + (item.precio * item.quantity).toLocaleString() + '</p>' +
-              '</div>' +
-              '<div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded border border-neutral-800">' +
-              '<button type="button" data-index="' + index + '" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>' +
-              '<span class="text-xs text-white font-bold w-4 text-center">' + item.quantity + '</span>' +
-              '<button type="button" data-index="' + index + '" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>' +
-              '</div></div>';
-    });
-
-    container.innerHTML = html;
-    countEl.textContent = totalItems;
-    totalEl.textContent = '$' + totalPrice.toLocaleString();
-
-    if (progressText && progressBar) {
-      const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
-      progressBar.style.width = percentage + '%';
-      if (totalPrice >= freeShippingThreshold) {
-        progressText.innerHTML = '🎉 <span class="text-emerald-400 font-bold">¡Felicidades! Tienes Envío Gratis</span>';
-        progressBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
-      } else {
-        const remaining = freeShippingThreshold - totalPrice;
-        progressText.innerHTML = 'Te faltan <b class="text-amber-400">$' + remaining.toLocaleString() + '</b> para <b>Envío Gratis</b>';
-        progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
-      }
-    }
-  }
 }
-
-    container.innerHTML = html;
-    countEl.textContent = totalItems;
-    totalEl.textContent = '$' + totalPrice.toLocaleString();
-
    // Cálculo de la barra de Envío Gratis
     if (progressText && progressBar) {
       const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
