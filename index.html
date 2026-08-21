@@ -344,7 +344,8 @@ function openModal(index) {
     const totalEl = document.getElementById('cartTotal');
     const progressText = document.getElementById('shippingProgressText');
     const progressBar = document.getElementById('shippingProgressBar');
-
+      
+    let html = '';
     let totalItems = 0;
     let totalPrice = 0;
     const freeShippingThreshold = 990;
