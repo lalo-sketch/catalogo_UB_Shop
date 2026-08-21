@@ -359,20 +359,20 @@ function openModal(index) {
         }
     } else {
         let html = '';
-        cart.forEach((item, index) => {
-            totalItems += item.quantity;
-            totalPrice += item.precio * item.quantity;
-            html += '<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">'
-                        <img src="${item.imagen}" class="w-12 h-12 object-cover rounded">
-                        <div class="flex-1">
-                            <h4 class="text-xs font-bold text-white line-clamp-1">${item.nombre}</h4>
-                            <p class="text-emerald-400 text-xs font-semibold">$${(item.precio * item.quantity).toLocaleString()}</p>
-                        </div>
-                        <div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded border border-neutral-800">
-                           '<button type="button" data-index="' + index + '" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>' +
-            '<span class="text-xs text-white font-bold w-4 text-center">' + item.quantity + '</span>' +
-            '<button type="button" data-index="' + index + '" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>' +
-            '</div></div>';
+       cart.forEach((item, index) => {
+        totalItems += item.quantity;
+        totalPrice += item.precio * item.quantity;
+        html += '<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-xl border border-neutral-800/80">' +
+                '<img src="' + item.imagen + '" class="w-12 h-12 object-cover rounded-lg border border-neutral-800">' +
+                '<div class="flex-1">' +
+                '<h4 class="text-xs font-bold text-white line-clamp-1">' + item.nombre + '</h4>' +
+                '<p class="text-emerald-400 text-xs font-semibold">$' + item.precio.toLocaleString() + '</p>' +
+                '</div>' +
+                '<div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded-lg border border-neutral-800">' +
+                '<button type="button" data-index="' + index + '" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>' +
+                '<span class="text-xs text-white font-bold w-4 text-center">' + item.quantity + '</span>' +
+                '<button type="button" data-index="' + index + '" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>' +
+                '</div></div>';
     });
 
     container.innerHTML = html;
