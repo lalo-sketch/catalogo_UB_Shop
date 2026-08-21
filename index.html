@@ -398,7 +398,7 @@ function openModal(index) {
         progressBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
       } else {
         const remaining = freeShippingThreshold - totalPrice;
-        progressText.innerHTML = 'Te faltan <b class="text-amber-400">$' + remaining.toLocaleString() + '</b> para <b>Envío Gratis</b>';
+        progressText.innerHTML =  `Te faltan <b class="text-amber-400">$' + remaining.toLocaleString() + '</b> para <b>Envío Gratis</b>`;
         progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
       }
     }
