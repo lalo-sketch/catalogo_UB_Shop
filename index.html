@@ -92,14 +92,6 @@
       <button onclick="toggleCartDrawer()" class="text-neutral-400 hover:text-white text-xl">&times;</button>
     </div>
 
-    <!-- Header del Carrito -->
-      <div class="p-4 border-b border-neutral-800 flex justify-between items-center bg-black/50">
-        <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
-          <i class="fa-solid fa-bag-shopping"></i> Tu Carrito
-        </h2>
-        <button onclick="toggleCartDrawer()" class="text-neutral-400 hover:text-white text-xl">&times;</button>
-      </div>
-
       <!-- BARRA ENVÍO GRATIS -->
       <div id="shippingProgressContainer" class="p-3 bg-neutral-950 border-b border-neutral-800 text-xs">
         <p id="shippingProgressText" class="text-center font-medium mb-1 text-amber-200/90"></p>
@@ -377,17 +369,17 @@ function openModal(index) {
                             <p class="text-emerald-400 text-xs font-semibold">$${(item.precio * item.quantity).toLocaleString()}</p>
                         </div>
                         <div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded border border-neutral-800">
-                            <button type="button" data-index="${index}" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>
-                            <span class="text-xs text-white font-bold w-4 text-center">${item.quantity}</span>
-                            <button type="button" data-index="${index}" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>
-                        </div>
-                    </div>`;
-        });
-        container.innerHTML = html;
-        countEl.textContent = totalItems;
-        totalEl.textContent = '$' + totalPrice.toLocaleString();
+                           '<button type="button" data-index="' + index + '" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>' +
+            '<span class="text-xs text-white font-bold w-4 text-center">' + item.quantity + '</span>' +
+            '<button type="button" data-index="' + index + '" data-action="plus" class="btn-qty text-neutral-400 hover:text-amber-400 text-sm px-2 cursor-pointer">+</button>' +
+            '</div></div>';
+    });
 
-     if (progressText && progressBar) {
+    container.innerHTML = html;
+    countEl.textContent = totalItems;
+    totalEl.textContent = '$' + totalPrice.toLocaleString();
+
+    if (progressText && progressBar) {
       const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
       progressBar.style.width = percentage + '%';
 
