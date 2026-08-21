@@ -362,7 +362,7 @@ function openModal(index) {
         cart.forEach((item, index) => {
             totalItems += item.quantity;
             totalPrice += item.precio * item.quantity;
-            html += `<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
+            html += '<div class="flex items-center gap-3 bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
                         <img src="${item.imagen}" class="w-12 h-12 object-cover rounded">
                         <div class="flex-1">
                             <h4 class="text-xs font-bold text-white line-clamp-1">${item.nombre}</h4>
