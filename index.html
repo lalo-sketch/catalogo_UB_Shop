@@ -387,22 +387,12 @@ function openModal(index) {
         countEl.textContent = totalItems;
         totalEl.textContent = '$' + totalPrice.toLocaleString();
 
-        if (progressText && progressBar) {
-            const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
-            progressBar.style.width = percentage + '%';
-            progressText.innerHTML = totalPrice >= freeShippingThreshold ? 
-                '🎉 <span class="text-emerald-400 font-bold">¡Envío Gratis!</span>' : 
-                Te faltan <b class="text-amber-400">$${(freeShippingThreshold - totalPrice).toLocaleString()}</b>;
-        }
-    }
-}
-   // Cálculo de la barra de Envío Gratis
-    if (progressText && progressBar) {
+     if (progressText && progressBar) {
       const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
       progressBar.style.width = percentage + '%';
 
       if (totalPrice >= freeShippingThreshold) {
-        progressText.innerHTML = '🎉 <span class="text-emerald-400 font-bold">¡Felicidades! Tienes Envío Gratis</span>';
+        progressText.innerHTML = '🎉 <span class="text-emerald-400 font-bold">¡Envío Gratis!</span>';
         progressBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
       } else {
         const remaining = freeShippingThreshold - totalPrice;
