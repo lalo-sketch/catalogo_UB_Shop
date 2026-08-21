@@ -92,6 +92,22 @@
       <button onclick="toggleCartDrawer()" class="text-neutral-400 hover:text-white text-xl">&times;</button>
     </div>
 
+    <!-- Header del Carrito -->
+      <div class="p-4 border-b border-neutral-800 flex justify-between items-center bg-black/50">
+        <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-bag-shopping"></i> Tu Carrito
+        </h2>
+        <button onclick="toggleCartDrawer()" class="text-neutral-400 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <!-- BANNER DINÁMICO DE ENVÍO GRATIS -->
+      <div id="shippingProgressContainer" class="p-3 bg-neutral-950 border-b border-neutral-800 text-xs">
+        <p id="shippingProgressText" class="text-center font-medium mb-1 text-amber-200/90"></p>
+        <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
+          <div id="shippingProgressBar" class="bg-amber-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
     <!-- Lista de Productos en el Carrito -->
     <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
       <!-- Se genera dinámicamente -->
@@ -330,18 +346,26 @@ function openModal(index) {
 
       updateCartUI();
     }
-   function updateCartUI() {
+  function updateCartUI() {
   const container = document.getElementById('cartItemsContainer');
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
+  const progressText = document.getElementById('shippingProgressText');
+  const progressBar = document.getElementById('shippingProgressBar');
 
   let totalItems = 0;
   let totalPrice = 0;
+  const freeShippingThreshold = 990;
 
   if (cart.length === 0) {
     container.innerHTML = '<p class="text-neutral-500 text-center py-8 text-sm">Tu carrito está vacío.</p>';
     countEl.textContent = '0';
     totalEl.textContent = '$0';
+    if (progressText && progressBar) {
+      progressText.innerHTML = 'Agrega productos para obtener <b>Envío Gratis</b>';
+      progressBar.style.width = '0%';
+      progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+    }
   } else {
     let html = '';
     cart.forEach((item, index) => {
@@ -353,7 +377,7 @@ function openModal(index) {
           <img src="${item.imagen}" class="w-12 h-12 object-cover rounded">
           <div class="flex-1">
             <h4 class="text-xs font-bold text-white line-clamp-1">${item.nombre}</h4>
-            <p class="text-emerald-400 text-xs font-semibold">$${(item.precio * item.quantity).toLocaleString()}</p>
+            <p class="text-emerald-400 text-xs font-semibold">$$${(item.precio * item.quantity).toLocaleString()}</p>
           </div>
           <div class="flex items-center gap-2 bg-neutral-900 px-2 py-1 rounded border border-neutral-800">
             <button type="button" data-index="${index}" data-action="minus" class="btn-qty text-neutral-400 hover:text-red-400 text-sm px-2 cursor-pointer">-</button>
@@ -363,9 +387,25 @@ function openModal(index) {
         </div>
       `;
     });
+
     container.innerHTML = html;
     countEl.textContent = totalItems;
     totalEl.textContent = '$' + totalPrice.toLocaleString();
+
+    // Cálculo de la barra de Envío Gratis
+    if (progressText && progressBar) {
+      const percentage = Math.min((totalPrice / freeShippingThreshold) * 100, 100);
+      progressBar.style.width = percentage + '%';
+
+      if (totalPrice >= freeShippingThreshold) {
+        progressText.innerHTML = '🎉 <span class="text-emerald-400 font-bold">¡Felicidades! Tienes Envío Gratis</span>';
+        progressBar.className = 'bg-emerald-500 h-2 rounded-full transition-all duration-300';
+      } else {
+        const remaining = freeShippingThreshold - totalPrice;
+        progressText.innerHTML = Te faltan <b class="text-amber-400">$${remaining.toLocaleString()}</b> para <b>Envío Gratis</b>;
+        progressBar.className = 'bg-amber-400 h-2 rounded-full transition-all duration-300';
+      }
+    }
   }
 }
    // Este código gestiona los clics de los botones de forma global
