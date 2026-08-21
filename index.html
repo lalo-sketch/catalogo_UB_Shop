@@ -431,20 +431,19 @@ document.getElementById('cartItemsContainer').addEventListener('click', (e) => {
         return;
       }
 
-      let message = "¡Hola! Me gustaría realizar un pedido con los siguientes productos:\n\n";
-      let total = 0;
+     let message = "¡Hola! Me gustaría realizar un pedido con los siguientes productos:\n\n";
+    let total = 0;
 
-      cart.forEach(item => {
+    cart.forEach(item => {
         const subtotal = item.precio * item.quantity;
         total += subtotal;
-        message += `• ${item.quantity}x ${item.nombre} - $${subtotal}\n`;
-      });
+        message += * ${item.quantity}x ${item.nombre} -$${subtotal}\n;
+    });
 
-      message += `\n*Total a pagar: $${total}*`;
+    message += \nTotal a pagar: $${total};
 
-      const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
-    }
+    const url = https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)};
+    window.open(url, '_blank');
   </script>
 </body>
 </html>
