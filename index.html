@@ -119,10 +119,12 @@
 
  <script>
     // Enlace público de Google Sheets en formato CSV
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTV145AYNCvylHJGYy4YL5NDJnkWSIfpHgwXJjSZO0d4Oa2zLw3--PIQke3LxiXoaUuHrduO-vhEXds/pub?output=csv';
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZQJs1zWzHSQ2aTtq-jrQjK-Rib2Qig2dVpPiFyE4Yvhh6gFl-HD8WTHaEIia2m3fwvB9ti5t3is5r/pub?output=csv';
     const PHONE_NUMBER = '522222051026'; // Pon aquí tu número de WhatsApp
     const fallbackImg = 'https://via.placeholder.com/300x300?text=Sin+Imagen';
-
+   
+    let currentProductImages = [];
+    let currentImageIndex = 0;
     let allProducts = [];
     let cart = [];
 
@@ -186,6 +188,8 @@ function parseCSV(text) {
     headers.forEach((h, index) => {
       obj[h] = values[index] || '';
     });
+    obj['descripcion'] = values[5] || ''; 
+      obj['imagen2'] = values[6] || '';
 
     // 3. RESTRICCIÓN: Solo agregar el producto si la celda "nombre" contiene texto válido
     if (obj.nombre && obj.nombre.trim() !== '') {
@@ -292,11 +296,33 @@ function openModal(index) {
     console.log("Producto seleccionado:",item);
     const modalCartBtn = document.getElementById('modalAddCartBtn');
 
-    const imgSrc = formatImageUrl(item.imagen);
-    const nombre = item.nombre || 'Sin nombre';
-    const whatsappMsg = encodeURIComponent('Hola, me interesa obtener información sobre: ' + nombre);
+   const nombre = item.nombre || 'Sin nombre';
+const whatsappMsg = encodeURIComponent('Hola, me interesa obtener información sobre: ' + nombre);
 
-    document.getElementById('modalImg').src = imgSrc;
+// Cargar imágenes disponibles
+currentProductImages = [];
+if (item.imagen) currentProductImages.push(item.imagen);
+if (item.imagen2) currentProductImages.push(item.imagen2);
+
+currentImageIndex = 0;
+
+const modalImg = document.getElementById('modalImg');
+const prevBtn = document.getElementById('prevImgBtn');
+const nextBtn = document.getElementById('nextImgBtn');
+
+if (currentProductImages.length > 0) {
+    modalImg.src = formatImageUrl(currentProductImages[0]);
+}
+
+if (prevBtn && nextBtn) {
+    if (currentProductImages.length > 1) {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+    } else {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+    }
+}
     document.getElementById('modalTitle').textContent = nombre;
     document.getElementById('modalCategory').textContent = item.categoria || '';
     document.getElementById('modalDescription').innerHTML = (item.Descripcion || item.descripcion || 'Sin descripción disponible.').replace(/\n/g, '<br>');
@@ -323,6 +349,11 @@ function openModal(index) {
         modal.classList.remove('flex');
       }
     }
+   function changeImage(direction) {
+    if (currentProductImages.length === 0) return;
+    currentImageIndex = (currentImageIndex + direction + currentProductImages.length) % currentProductImages.length;
+    document.getElementById('modalImg').src = formatImageUrl(currentProductImages[currentImageIndex]);
+}
 
     // --- LÓGICA DEL CARRITO DE COMPRAS ---
 
