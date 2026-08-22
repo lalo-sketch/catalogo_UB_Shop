@@ -289,7 +289,7 @@ function drawCards(items) {
 function openModal(index) {
     const item = allProducts[index];
     if (!item) return;
-
+    console.log("Producto seleccionado:",item);
     const modalCartBtn = document.getElementById('modalAddCartBtn');
 
     const imgSrc = formatImageUrl(item.imagen);
