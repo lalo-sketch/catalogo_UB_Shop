@@ -299,7 +299,7 @@ function openModal(index) {
     document.getElementById('modalImg').src = imgSrc;
     document.getElementById('modalTitle').textContent = nombre;
     document.getElementById('modalCategory').textContent = item.categoria || '';
-    document.getElementById('modalDescription').innerHTML = (item.descripcion || 'Sin descripción disponible.').replace(/\n/g, '<br>');
+    document.getElementById('modalDescription').innerHTML = (item.Descripcion || 'Sin descripción disponible.').replace(/\n/g, '<br>');
     document.getElementById('modalPrice').textContent = item.precio ? '$' + item.precio : '';
     document.getElementById('modalWaLink').href = 'https://wa.me/' + PHONE_NUMBER + '?text=' + whatsappMsg;
 
