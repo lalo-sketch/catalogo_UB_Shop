@@ -342,7 +342,7 @@ if (prevBtn && nextBtn) {
     document.getElementById('modalPrice').textContent = item.precio ? '$' + item.precio : '';
     document.getElementById('modalWaLink').href = 'https://wa.me/' + PHONE_NUMBER + '?text=' + whatsappMsg;
 
-    const modalCartBtn = document.getElementById('modalAddCartBtn');
+    modalCartBtn = document.getElementById('modalAddCartBtn');
     if (modalCartBtn) {
         modalCartBtn.onclick = function() {
             addToCart(nombre, item.precio, currentProductImages[0] || item.imagen);
